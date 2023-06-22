@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 using std::cout;
 using std::cin;
