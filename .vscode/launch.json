@@ -1,0 +1,24 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "externalConsole": true,
+      "cwd": "c:/Users/dylan/OneDrive/Documents/Coding/Visual Studio Code/EC 327 [Summer 2023]/Class Project/Clone Repository Destination/raising-chicanery",
+      "program": "c:/Users/dylan/OneDrive/Documents/Coding/Visual Studio Code/EC 327 [Summer 2023]/Class Project/Clone Repository Destination/raising-chicanery/build/Debug/outDebug",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
+}

@@ -31,7 +31,8 @@ int main () {
         window.display();
     }
 
-    return 0;
+    
     cout << "VS PetCode is awesome" << "\n";
     cout << "Welcome to Raising Chicanery! Watch our dog do some cool tricks: " << '\n';
+    return 0;
 }
