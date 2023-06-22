@@ -11,5 +11,6 @@ using std::to_string;
 using std::stoi;
 
 int main () {
+    cout << "VS PetCode is awesome" << "\n";
     cout << "Welcome to Raising Chicanery! Watch our dog do some cool tricks: " << '\n';
 }
