@@ -20,17 +20,12 @@ int main () {
     while (window.isOpen())
     {
         sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-                window.close();
-        }
+        while (window.pollEvent(event)) if (event.type == sf::Event::Closed) window.close();
 
         window.clear();
         window.draw(shape);
         window.display();
     }
-
     
     cout << "VS PetCode is awesome" << "\n";
     cout << "Welcome to Raising Chicanery! Watch our dog do some cool tricks: " << '\n';
