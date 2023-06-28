@@ -15,7 +15,7 @@ using sf::RenderWindow;
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
-const int squareWindowSize = 1250;
+const int squareWindowSize = 750;
 
 class Game {
   public:
@@ -60,14 +60,14 @@ class Prologue: public Game {
         logo.loadFromFile("pizza_logo.avif");
         //puts the logo in each four corners of the Prologue Screen
         for (int i = 0; i < 4; i++) {
-            vector<int> coords = {50, int(squareWindowSize) - 50};
+            vector<int> coords = {10, int(squareWindowSize) - 10};
             int z = coords.at(i/2);
             sf::Sprite aLogo(logo);
             aLogo.setPosition(z, z);
             screenAssets.push_back(aLogo);
         }
         string welcomeText = "Welcome to Raising Chicanery's Pizza! \n Press enter \n to go into our fine establishment";
-        configureScreenText(60, sf::Color::White, welcomeText);
+        configureScreenText(30, sf::Color::White, welcomeText);
 
         gameSounds.openFromFile(""); // fix path
 
@@ -85,7 +85,7 @@ class Prologue: public Game {
 class Intro: public Game {
   public:
     Intro(RenderWindow* theWindow) : Game(theWindow) {
-        configurePizzaCrust(500, sf::Color::White, 250, 250);
+        configurePizzaCrust(200, sf::Color::White, 175, 175);
     }
 };
 
@@ -93,21 +93,22 @@ class Toppings: public Game {
   public:
     vector<sf::Sprite> toppings;
     Toppings(RenderWindow* theWindow, int charredness) : Game(theWindow) { //accepts int between 0 and 5
-        configurePizz
-        if (event.type == sf::Event::MouseButtonPressed) {
-            sf::CircleShape *shape = new sf::CircleShape(50);
-            sf::Sprite *sprite = new sf::Sprite();
-            sprite->setPosition(event.mouseButton.x,event.mouseButton.y);
-            sprite->setFillColor(sf::Color(255, 1, 1));
-            shapes.push_back(shape);
-        }
-    }
-                window.clear();
+    //     if (event.type == sf::Event::MouseButtonPressed) {
+    //         sf::CircleShape *shape = new sf::CircleShape(50);
+    //         sf::Sprite *sprite = new sf::Sprite();
+    //         sprite->setPosition(event.mouseButton.x,event.mouseButton.y);
+    //         sprite->setFillColor(sf::Color(255, 1, 1));
+    //         shapes.push_back(shape);
+    //     }
+    // }
+    //             window.clear();
 
-                for(auto it=shapes.begin();it!=shapes.end();it++)
-                {
-                    window.draw(**it);
-                }
+    //             for(auto it=shapes.begin();it!=shapes.end();it++)
+    //             {
+    //                 window.draw(**it);
+    //             }
+    
+    }
 };
 
 class Endgame: public Game {
@@ -117,7 +118,7 @@ class Endgame: public Game {
 };
 
 int main () {
-    sf::RenderWindow mainWindow(sf::VideoMode(1500, 1500), "Raising Chicanery's Pizza");
+    sf::RenderWindow mainWindow(sf::VideoMode(squareWindowSize, squareWindowSize), "Raising Chicanery's Pizza");
     Prologue stage1(&mainWindow);
     //Intro stage2(mainWindow); //pizza crust
     //Toppings stage3(mainWindow, stage2.getCrispiness());
