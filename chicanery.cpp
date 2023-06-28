@@ -24,7 +24,7 @@ class Game {
     sf::Event event;
     sf::CircleShape pizzaCrust;
     sf::Text screenText;
-    sf::Music gameSounds;
+    //sf::Music gameSounds;
     vector<sf::Sprite> screenAssets;
     sf::RenderWindow* gameWindow;
 
@@ -69,7 +69,7 @@ class Prologue: public Game {
         string welcomeText = "Welcome to Raising Chicanery's Pizza! \n Press enter \n to go into our fine establishment";
         configureScreenText(30, sf::Color::White, welcomeText);
 
-        gameSounds.openFromFile(""); // fix path
+        //gameSounds.openFromFile(""); // fix path
 
         while(!isStageOver) {
             for (auto asset : screenAssets) gameWindow->draw(asset);
