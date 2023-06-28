@@ -10,151 +10,120 @@ using std::string;
 using std::to_string;
 using std::stoi;
 using std::vector;
-using sf::Mouse;
-using sf::Color;
+using sf::RenderWindow;
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
+const int squareWindowSize = 1250;
+
 class Game {
   public:
     //sf Objects
+    sf::Font coolFont;
     sf::Event event;
-    sf::RenderWindow window;//(sf::VideoMode(1500, 1500), "Raising Chicanery's Pizza");
     sf::CircleShape pizzaCrust;
-    sf::Text welcomeText;
+    sf::Text screenText;
+    sf::Music gameSounds;
+    vector<sf::Sprite> screenAssets;
+    sf::RenderWindow* gameWindow;
 
-    //Bools
-    bool isOver;
+    //other var
+    bool isStageOver;
 
-    void configurePizzaCrust(int radius, Color pizzaColor, float xCoord, float yCoord) {
+    void configurePizzaCrust(int radius, sf::Color pizzaColor, float xCoord, float yCoord) {
         pizzaCrust.setRadius(radius);
         pizzaCrust.setFillColor(pizzaColor);
         pizzaCrust.setPosition(xCoord, yCoord);
     }
 
-    Game(int windowSize = 1500) {
-       isOver = false;
-       configurePizzaCrust(500, Color::White, 250, 250);
-       //construct window;
+    void configureScreenText(int fontSize, sf::Color textColor, string text) {
+        coolFont.loadFromFile("Apple Chancery.ttf");
+        screenText.setFont(coolFont);
+        screenText.setCharacterSize(fontSize);
+        screenText.setFillColor(textColor);
+        screenText.setString(text);
     }
-    
+
+    Game(RenderWindow* theWindow) {
+        gameWindow = theWindow;
+        isStageOver = false;
+        while (gameWindow->pollEvent(event)) if (event.type == sf::Event::Closed) gameWindow->close();
+    }
 };
 
 class Prologue: public Game {
   public:
-    sf::Font coolFont;
     sf::Texture logo;
-    vector<sf::Sprite> logos;
-
-    Prologue() {
-        coolFont.loadFromFile("Apple Chancery.ttf");
-        logo.loadFromFile("file"); //fix later
+    sf::Sprite logoSprite;
+    Prologue(RenderWindow* theWindow) : Game(theWindow) {
+        logo.loadFromFile("pizza_logo.avif");
+        //puts the logo in each four corners of the Prologue Screen
         for (int i = 0; i < 4; i++) {
-            vector<int> coords = {50, int(window.getSize().x) - 50};
+            vector<int> coords = {50, int(squareWindowSize) - 50};
             int z = coords.at(i/2);
             sf::Sprite aLogo(logo);
             aLogo.setPosition(z, z);
+            screenAssets.push_back(aLogo);
         }
-        welcomeText.setFont(coolFont);
-        welcomeText.setCharacterSize(60);
-        welcomeText.setFillColor(sf::Color::White);
-        welcomeText.setString("Welcome to Raising Chicanery's Pizza! \n Press enter \n to go into ourfine establishment");
+        string welcomeText = "Welcome to Raising Chicanery's Pizza! \n Press enter \n to go into our fine establishment";
+        configureScreenText(60, sf::Color::White, welcomeText);
+
+        gameSounds.openFromFile(""); // fix path
+
+        while(!isStageOver) {
+            for (auto asset : screenAssets) gameWindow->draw(asset);
+            gameWindow->draw(screenText);
+            gameWindow->display();
+            while (gameWindow->pollEvent(event)) 
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+                    isStageOver = true;
+        }
     }
-    
 };
 
 class Intro: public Game {
   public:
-    
+    Intro(RenderWindow* theWindow) : Game(theWindow) {
+        configurePizzaCrust(500, sf::Color::White, 250, 250);
+    }
 };
 
 class Toppings: public Game {
   public:
-    
-};
-
-class Endgame: public Game {
-  public:
-    Endgame() {
-    sf::Texture texture;
-    texture.loadFromFile("bad_ending.jpg");
-    sf::Sprite endingSprite(texture);
-    }
-    
-};
-
-int main () {
-    
-
-
-
-
-    while (window.isOpen()) {
-        while (window.pollEvent(event)) if (event.type == sf::Event::Closed) window.close();
-
-        window.draw(welcomeText);
-        window.display();
-
-        bool finishedPrologue = false;
-        bool finishedIntro = false;
-        bool finishedToppings = false;
-        bool finishedPizza = false;
-
-        //initialized Prologue screen here
-        while(!finishedPrologue) {
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) finishedPrologue = true;
-        }
-        window.clear();
-
-        //initialized Intro screen here
-        while(!finishedIntro) {
-
-        }
-        window.clear();
-
-        //initialized Intro screen here
-        while(!finishedToppings) {
-
-        }
-        window.clear();
-
-        if (Mouse::isButtonPressed(sf::Mouse::Left)) {
-            cout << "Left button was pressed so fire fire fire!";
-        }
-
-        
-        //Add Shape on Click Code
-        switch (event.type) {
-            case sf::Event::Closed: {
-                window.close();
-                return 0;
-            }
-            case sf::Event::MouseButtonPressed: {
-                sf::CircleShape *shape = new sf::CircleShape(50);
-                shape->setPosition(event.mouseButton.x,event.mouseButton.y);
-                shape->setFillColor(sf::Color(255, 1, 1));
-                shapes.push_back(shape);
-            } 
+    vector<sf::Sprite> toppings;
+    Toppings(RenderWindow* theWindow, int charredness) : Game(theWindow) { //accepts int between 0 and 5
+        configurePizz
+        if (event.type == sf::Event::MouseButtonPressed) {
+            sf::CircleShape *shape = new sf::CircleShape(50);
+            sf::Sprite *sprite = new sf::Sprite();
+            sprite->setPosition(event.mouseButton.x,event.mouseButton.y);
+            sprite->setFillColor(sf::Color(255, 1, 1));
+            shapes.push_back(shape);
         }
     }
-
                 window.clear();
 
                 for(auto it=shapes.begin();it!=shapes.end();it++)
                 {
                     window.draw(**it);
                 }
+};
 
+class Endgame: public Game {
+  public:
+    Endgame(RenderWindow* theWindow) : Game(theWindow) {
+    }
+};
 
-        window.clear();
-        window.draw(pizzaCrust);
-        window.draw(endingSprite);
-        //window.draw(texture);
-        window.display();
-    
-    cout << "VS PetCode is awesome" << "\n";
-    cout << "Welcome to Raising Chicanery! Watch our dog do some cool tricks: " << '\n';
+int main () {
+    sf::RenderWindow mainWindow(sf::VideoMode(1500, 1500), "Raising Chicanery's Pizza");
+    Prologue stage1(&mainWindow);
+    //Intro stage2(mainWindow); //pizza crust
+    //Toppings stage3(mainWindow, stage2.getCrispiness());
+    //Endgame stage4(mainWindow, stage3.getToppings());
+    //while (mainWindow.pollEvent(mainEvent)) if (mainEvent.type == sf::Event::Closed) mainWindow.close();
+    //cout << "VS PetCode is awesome" << "\n";
+    //cout << "Welcome to Raising Chicanery! Watch our dog do some cool tricks: " << '\n';
     return 0;
 }
-
