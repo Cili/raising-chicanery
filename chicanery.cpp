@@ -30,9 +30,9 @@ int main () {
     //Welcome Text
     sf::Text welcomeText;
     welcomeText.setFont(coolFont);
-    welcomeText.setCharacterSize(100);
+    welcomeText.setCharacterSize(60);
     welcomeText.setFillColor(sf::Color::White);
-    welcomeText.setString("Welcome to Raising Chicanery's Pizza! \n Press enter to alight into our fine establishment");
+    welcomeText.setString("Welcome to Raising Chicanery's Pizza! \n Press enter to go into ourfine establishment");
 
     //bad_ending
     sf::Texture texture;
@@ -64,3 +64,30 @@ int main () {
     cout << "Welcome to Raising Chicanery! Watch our dog do some cool tricks: " << '\n';
     return 0;
 }
+
+//Add Shape on Click Code
+/*
+ switch (event.type)
+            {
+                case sf::Event::Closed:
+                {
+                    window.close();
+                    return 0;
+                }
+                case sf::Event::MouseButtonPressed:
+                {
+                    sf::CircleShape *shape = new sf::CircleShape(50);
+                    shape->setPosition(event.mouseButton.x,event.mouseButton.y);
+                    shape->setFillColor(sf::Color(100, 250, 50));
+                    shapes.push_back(shape);
+                } 
+            }
+        }
+
+        window.clear();
+
+        for(auto it=shapes.begin();it!=shapes.end();it++)
+        {
+            window.draw(**it);
+        }
+*/
