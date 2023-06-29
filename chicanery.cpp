@@ -27,21 +27,23 @@ class Game {
     //sf::Music gameSounds;
     vector<sf::Sprite> screenAssets;
     sf::RenderWindow* gameWindow;
+    vector<sf::Shape> screenShapes;
 
     //other var
     bool isStageOver;
 
-    void configurePizzaCrust(int radius, sf::Color pizzaColor, float xCoord, float yCoord) {
+    void configurePizzaCrust(int radius, sf::Color pizzaColor, int xCoord, int yCoord) {
         pizzaCrust.setRadius(radius);
         pizzaCrust.setFillColor(pizzaColor);
         pizzaCrust.setPosition(xCoord, yCoord);
     }
 
-    void configureScreenText(int fontSize, sf::Color textColor, string text) {
+    void configureScreenText(int fontSize, sf::Color textColor, string text, int xCoord, int yCoord) {
         coolFont.loadFromFile("Apple Chancery.ttf");
         screenText.setFont(coolFont);
         screenText.setCharacterSize(fontSize);
         screenText.setFillColor(textColor);
+        screenText.setPosition(xCoord, yCoord);
         screenText.setString(text);
     }
 
@@ -55,24 +57,28 @@ class Game {
 class Prologue: public Game {
   public:
     sf::Texture logo;
-    sf::Sprite logoSprite;
     Prologue(RenderWindow* theWindow) : Game(theWindow) {
         logo.loadFromFile("pizza_logo.avif");
         //puts the logo in each four corners of the Prologue Screen
         for (int i = 0; i < 4; i++) {
             vector<int> coords = {10, int(squareWindowSize) - 10};
             int z = coords.at(i/2);
-            sf::Sprite aLogo(logo);
+            sf::Sprite aLogo;
+            aLogo.setTexture(logo);
             aLogo.setPosition(z, z);
             screenAssets.push_back(aLogo);
+            sf::CircleShape logoCircle(20);
+            logoCircle.setPosition(z, z);
+            logoCircle.setFillColor(sf::Color::White);
+            screenShapes.push_back(logoCircle);
+
         }
         string welcomeText = "Welcome to Raising Chicanery's Pizza! \n Press enter \n to go into our fine establishment";
-        configureScreenText(30, sf::Color::White, welcomeText);
+        configureScreenText(30, sf::Color::White, welcomeText, squareWindowSize/4, squareWindowSize/4);
 
         //gameSounds.openFromFile(""); // fix path
-
         while(!isStageOver) {
-            for (auto asset : screenAssets) gameWindow->draw(asset);
+            for (auto asset : screenShapes) gameWindow->draw(asset);
             gameWindow->draw(screenText);
             gameWindow->display();
             while (gameWindow->pollEvent(event)) 
