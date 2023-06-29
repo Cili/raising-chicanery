@@ -29,7 +29,7 @@ class Game {
     vector<sf::Shape> screenShapes;
 
     //other var
-    bool isStageOver;
+    bool isStageOver; 
 
     void configurePizza(int radius, sf::Color pizzaColor, int xCoord, int yCoord) {
         pizzaCrust.setRadius(radius);
@@ -41,9 +41,9 @@ class Game {
         pizzaSauce.setPosition(xCoord + 20, yCoord + 20);
     }
 
-    void configureText(sf::Text* theText, int fontSize, sf::Color textColor, string text, int xCoord, int yCoord) {
+    void configureText(sf::Text theText, int fontSize, sf::Color textColor, string text, int xCoord, int yCoord) {
         coolFont.loadFromFile("assets/Apple Chancery.ttf");
-        the(coolFont);
+        screenText.setFont(coolFont);
         screenText.setCharacterSize(fontSize);
         screenText.setFillColor(textColor);
         screenText.setPosition(xCoord, yCoord);
@@ -91,33 +91,33 @@ class Prologue: public Game {
 
         //display and call to action
         while(!isStageOver) {
+            gameWindow->clear(sf::Color::Black);
             for (auto asset : screenAssets) gameWindow->draw(asset);
             gameWindow->draw(screenText);
             gameWindow->display();
             while (gameWindow->pollEvent(event)) 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) isStageOver = true;
         }
-        
         gameSounds.stop();
-        gameWindow->clear();
     }
 };
 
-class Intro : public Game {
+class Prepping : public Game {
 public:
     int red = 255;
     int green = 237;
     int blue = 185;
     int loopCount = 1;
-    int multiplier = 50;
+    int multiplier = 30;
     sf::Color pizzaColor;
   
 
-    Intro(RenderWindow* theWindow) : Game(theWindow) {
+    Prepping(RenderWindow* theWindow) : Game(theWindow) {
         // sets up crust and instructional text
         configureText(screenText, 30, sf::Color::White, "press f to cooka da pizza \n press enter when you're done", 10, 10);
         
         while (!isStageOver) {
+            gameWindow->clear(sf::Color::Black);
             pizzaColor = sf::Color(red, green, blue);
             pizzaCrust.setFillColor(pizzaColor);
             gameWindow->draw(screenText);
@@ -144,14 +144,16 @@ public:
                 }
             }
         }
-        gameWindow->clear();
     }
 };
 
 class Toppings: public Game {
   public:
+    //sf::Sound spongey;
     sf::Sprite currentTopping;
     int toppingRadiusApproximation = 10; //an approximation for the "radius" of a topping
+    sf::SoundBuffer buffer;
+    sf::Sound sound;
 
     bool inPizza(int xCoord, int yCoord) {
         int a = xCoord - (squareWindowSize / 2);
@@ -162,10 +164,11 @@ class Toppings: public Game {
     }
 
     Toppings(RenderWindow* theWindow, sf::Color crustColor) : Game(theWindow) { //accepts int between 0 and 5
+        gameWindow->clear(sf::Color::Black);
         pizzaCrust.setFillColor(crustColor);
         currentTopping.setPosition(squareWindowSize - 70, 10);
 
-        string instructionsText = "Time for Toppings!\n-------------\n Press key to queue topping \n Tap anywhere on pizza to add topping \n | p -> pineapple |\n| s -> sausage |\n| a -> anchioves |\n| b -> broccoli |\n| m -> mushrooms |\n| o -> black olives |\n| f -> buffalo |";
+        string instructionsText = "Time for Toppings!\n-------------\n Press key to queue topping \n Tap anywhere on pizza to add topping \n| p -> pineapple |\n| s -> sausage |\n| a -> anchioves |\n| b -> broccoli |\n| m -> mushrooms |\n| o -> black olives |\n| f -> buffalo |";
         configureText(screenText, 20, sf::Color::White, instructionsText, 30, 30);
 
         sf::Texture pineapple;
@@ -183,17 +186,32 @@ class Toppings: public Game {
         sf::Texture buffalo;
         buffalo.loadFromFile("assets/buffalo.jpeg");
 
+        /*
+        sf::SoundBuffer buffer;
+        buffer.loadFromFile("assets/filename.wav")
+
+        sf::Sound sound;
+        sound.setBuffer(buffer);
+        sound.play();
+        */
+
         while(!isStageOver) {
-            gameSounds.openFromFile("spongey.wav");
-            gameSounds.setLoop(true);
-            gameSounds.play();
+            gameWindow->clear(sf::Color::Black);
+            buffer.loadFromFile("assets/spongey.wav");
+            sound.setBuffer(buffer);
+            sound.setLoop(true);
+            sound.play();
+            // gameSounds.openFromFile("assets/intro_music.wav");
+            // gameSounds.setLoop(true);
+            // gameSounds.play();
             gameWindow->draw(pizzaCrust);
             gameWindow->draw(pizzaSauce);
             for (auto asset : screenAssets) gameWindow->draw(asset);
             gameWindow->draw(screenText);
             gameWindow->display();
             while (gameWindow->pollEvent(event)) 
-                //if (event.type == sf::Event::Closed) gameWindow->close();
+                
+                //allows user to choose desired topping with keyboard input
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) currentTopping.setTexture(pineapple);
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) currentTopping.setTexture(buffalo);
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) currentTopping.setTexture(sausage);
@@ -212,10 +230,16 @@ class Toppings: public Game {
                 }
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) isStageOver = true;
         }  
+
+        //GameWindow must be refreshed without the screentext for screenshot
+        gameWindow->clear(sf::Color::Black);
+        gameWindow->draw(pizzaCrust);
+        gameWindow->draw(pizzaSauce);
+        for (auto asset : screenAssets) gameWindow->draw(asset);
         sf::Image screenshot = gameWindow->capture();
+        sound.stop();
         screenshot.saveToFile("assets/screenshot.jpg"); //stores picture of pizza for stage 4
-        gameSounds.stop();
-        gameWindow->clear();
+        gameWindow->clear(sf::Color::Black);
     }
     
 };
@@ -223,31 +247,43 @@ class Toppings: public Game {
 class Endgame: public Game {
   public:
     Endgame(RenderWindow* theWindow, int charLevel) : Game(theWindow) {
-        string endGameText;
+        sf::Text finalText;
+        finalText.setFont(coolFont);
+        finalText.setCharacterSize(30);
+        finalText.setFillColor(sf::Color::White);
+        finalText.setPosition(squareWindowSize / 10, 20);
+        string endGameText = "test";
         switch (charLevel % 5) {
             case 0:
-                endGameText = "Nice Pizza! Baked... extra extra rare.";
+                endGameText = "Nice Pizza! \nBaked... extra extra rare.\nThanks for playing!";
                 break;
             case 1:
-                endGameText = "Nice Pizza! Not too shabby.";
+                endGameText = "Coolio! \nNot too shabby.\nThanks for playing!";
                 break;
             case 2:
-                endGameText = "Ah very nice. Well done.";
+                endGameText = "Ah very nice. \nWell done.\nThanks for playing!";
                 break;
             case 3:
-                endGameText = "Hmm, that's what we call a 'medium-well-done' pizza.";
+                endGameText = "Hmm, that's what we call \na 'medium-well-done' pizza.\nThanks for playing!";
                 break;
             case 4:
-                endGameText = "My oh my, that Pizza is charred to perfection.";
+                endGameText = "My oh my, that Pizza is \ncharred to perfection.\nThanks for playing!";
                 break;
+            default:
+                endGameText = "Snazzy pizza!\nThanks for playing!";
         }
-        configureText(screenText, 20, sf::Color::White, endGameText, squareWindowSize / 4, 20);
+        finalText.setString(endGameText);
+        configureText(screenText, 20, sf::Color::White, endGameText, squareWindowSize / 10, 20);
         sf::Texture result;
         result.loadFromFile("assets/screenshot.jpg");
-        sf::Sprite resultDisplay(result); //should auto-position to (0, 0)
+        sf::RectangleShape resultDisplay(sf::Vector2f(squareWindowSize, squareWindowSize));
+        resultDisplay.setTexture(&result); //should auto-position to (0, 0)
         while(!isStageOver) {
-            gameWindow->draw(resultDisplay);
+            gameWindow->clear(sf::Color::Black);
             gameWindow->draw(screenText);
+            gameWindow->draw(resultDisplay);
+            gameWindow->draw(finalText); //finalText is co-dependent on screenText for some reason;
+            gameWindow->display();
             while (gameWindow->pollEvent(event)) 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) isStageOver = true;
         }
@@ -258,14 +294,8 @@ class Endgame: public Game {
 int main () {
     sf::RenderWindow mainWindow(sf::VideoMode(squareWindowSize, squareWindowSize), "Raising Chicanery's Pizza");
     Prologue stage1(&mainWindow);
-    mainWindow.clear();
-    Intro stage2(&mainWindow);
-    mainWindow.clear();
+    Prepping stage2(&mainWindow);
     Toppings stage3(&mainWindow, stage2.pizzaColor);
-    mainWindow.clear();
     Endgame stage4(&mainWindow, stage2.loopCount);
-    //while (mainWindow.pollEvent(mainEvent)) if (mainEvent.type == sf::Event::Closed) mainWindow.close();
-    //cout << "VS PetCode is awesome" << "\n";
-    //cout << "Welcome to Raising Chicanery! Watch our dog do some cool tricks: " << '\n';
     return 0;
 }
