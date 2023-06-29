@@ -24,13 +24,14 @@ class Game {
     sf::Event event;
     sf::CircleShape pizzaCrust;
     sf::Text screenText;
-    //sf::Music gameSounds;
+    sf::Music gameSounds;
     vector<sf::Sprite> screenAssets;
     sf::RenderWindow* gameWindow;
     vector<sf::Shape> screenShapes;
 
     //other var
     bool isStageOver;
+    int charLevel; //char as in, charred as coal
 
     void configurePizzaCrust(int radius, sf::Color pizzaColor, int xCoord, int yCoord) {
         pizzaCrust.setRadius(radius);
@@ -50,48 +51,98 @@ class Game {
     Game(RenderWindow* theWindow) {
         gameWindow = theWindow;
         isStageOver = false;
-        while (gameWindow->pollEvent(event)) if (event.type == sf::Event::Closed) gameWindow->close();
     }
 };
 
 class Prologue: public Game {
   public:
     sf::Texture logo;
+    sf::Texture tower;
     Prologue(RenderWindow* theWindow) : Game(theWindow) {
         logo.loadFromFile("pizza_Icon_larger.jpeg");
+        tower.loadFromFile("pisaTower.jpg");
         //puts the logo in each four corners of the Prologue Screen
         for (int i = 0; i < 4; i++) {
-            vector<int> coords = {10, int(squareWindowSize) - 10};
-            int z = coords.at(i/2);
+            vector<int> xCoords = {10, int(squareWindowSize) - 70, 10, int(squareWindowSize) - 70};
+            vector<int> yCoords = {10, 10, int(squareWindowSize) - 70, int(squareWindowSize) - 70};
+            int x = xCoords.at(i);
+            int y = yCoords.at(i);
             sf::Sprite aLogo;
             aLogo.setTexture(logo);
-            aLogo.setPosition(z, z);
+            aLogo.setPosition(x, y);
             screenAssets.push_back(aLogo);
-            // sf::CircleShape logoCircle(20);
-            // logoCircle.setPosition(z, z);
-            // logoCircle.setFillColor(sf::Color::White);
-            // screenShapes.push_back(logoCircle);
-
         }
-        string welcomeText = "Welcome to Raising Chicanery's Pizza! \n Press enter \n to go into our fine establishment";
+        //sets up towerimage
+        sf::Sprite aTower;
+        aTower.setTexture(tower);
+        aTower.setPosition(int(squareWindowSize)/2, int(squareWindowSize)/ 3);
+        aTower.rotate(-8);
+        screenAssets.push_back(aTower);
+
+        //sets up welcome txt
+        string welcomeText = "Welcome to Raising Chicanery's Pizza! \n Press enter \n to go into \n our fine \n establishment";
         configureScreenText(30, sf::Color::White, welcomeText, squareWindowSize/4, squareWindowSize/4);
 
-        //gameSounds.openFromFile(""); // fix path
+        //sets up sound
+        gameSounds.openFromFile("intro_music.wav"); // fix path
+        gameSounds.setLoop(true);
+        gameSounds.play();
+
+
         while(!isStageOver) {
             for (auto asset : screenAssets) gameWindow->draw(asset);
             gameWindow->draw(screenText);
             gameWindow->display();
             while (gameWindow->pollEvent(event)) 
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
-                    isStageOver = true;
+                //if (event.type == sf::Event::Closed) gameWindow->close();
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) isStageOver = true;
         }
+        gameSounds.stop();
     }
 };
 
-class Intro: public Game {
-  public:
+class Intro : public Game {
+public:
+    sf::Event event;
+    int red = 255;
+    int blue = 237;
+    int green = 185;
+    int loopcount = 1;
+    int multiplier = 5;
+    sf::Color pizzaColor = sf::Color(red, green, blue);
+
+    
+
     Intro(RenderWindow* theWindow) : Game(theWindow) {
-        configurePizzaCrust(200, sf::Color::White, 175, 175);
+
+        configurePizzaCrust(200, pizzaColor, 175, 175);
+
+        while (!isStageOver) {
+            while (gameWindow->pollEvent(event)) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+                    isStageOver = true;
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) {
+                    red -= loopcount * multiplier;
+                    blue -= loopcount * multiplier * (237 / 255);
+                    green -= loopcount * multiplier * (185 / 255);
+
+                    if (red <= 0) red = 0;
+                    if (blue <= 0) blue = 0;
+                    if (green <= 0) green = 0;
+
+                    cout << red << ", " << green << ", " << blue << "\n";
+
+                    pizzaColor = sf::Color( red, green, blue );
+
+                    configurePizzaCrust(200, pizzaColor, 175, 175);
+                    loopcount++;
+
+                }
+            }
+
+            gameWindow->draw(pizzaCrust);
+            gameWindow->display();
+        }
     }
 };
 
@@ -99,6 +150,7 @@ class Toppings: public Game {
   public:
     vector<sf::Sprite> toppings;
     Toppings(RenderWindow* theWindow, int charredness) : Game(theWindow) { //accepts int between 0 and 5
+        charLevel = charredness; //char as in, charred as coal
     //     if (event.type == sf::Event::MouseButtonPressed) {
     //         sf::CircleShape *shape = new sf::CircleShape(50);
     //         sf::Sprite *sprite = new sf::Sprite();
