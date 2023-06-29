@@ -58,7 +58,7 @@ class Prologue: public Game {
   public:
     sf::Texture logo;
     Prologue(RenderWindow* theWindow) : Game(theWindow) {
-        logo.loadFromFile("pizza_logo.avif");
+        logo.loadFromFile("pizza_Icon_larger.jpeg");
         //puts the logo in each four corners of the Prologue Screen
         for (int i = 0; i < 4; i++) {
             vector<int> coords = {10, int(squareWindowSize) - 10};
@@ -67,10 +67,10 @@ class Prologue: public Game {
             aLogo.setTexture(logo);
             aLogo.setPosition(z, z);
             screenAssets.push_back(aLogo);
-            sf::CircleShape logoCircle(20);
-            logoCircle.setPosition(z, z);
-            logoCircle.setFillColor(sf::Color::White);
-            screenShapes.push_back(logoCircle);
+            // sf::CircleShape logoCircle(20);
+            // logoCircle.setPosition(z, z);
+            // logoCircle.setFillColor(sf::Color::White);
+            // screenShapes.push_back(logoCircle);
 
         }
         string welcomeText = "Welcome to Raising Chicanery's Pizza! \n Press enter \n to go into our fine establishment";
@@ -78,7 +78,7 @@ class Prologue: public Game {
 
         //gameSounds.openFromFile(""); // fix path
         while(!isStageOver) {
-            for (auto asset : screenShapes) gameWindow->draw(asset);
+            for (auto asset : screenAssets) gameWindow->draw(asset);
             gameWindow->draw(screenText);
             gameWindow->display();
             while (gameWindow->pollEvent(event)) 
